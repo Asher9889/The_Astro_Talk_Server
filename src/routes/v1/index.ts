@@ -1,8 +1,8 @@
 import express from "express";
-import v1Routes from "./v1/index"
+import blogRoutes from "./blog.routes";
 
 const router = express.Router();
 
-router.use("/v1", v1Routes);
+router.use("/blog", blogRoutes);
 
 export default router;

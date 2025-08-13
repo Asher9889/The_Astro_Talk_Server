@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express';
 import { config } from './config/index';
 import cors from 'cors';
-// import apiRoutes from "./routes/index";
+import apiRoutes from "./routes/index";
 import { checkRouteExists, globalErrorHandler } from './utils/index';
 import connectMongoDB from './db/connectMongoDB';
 
@@ -35,7 +35,7 @@ app.use(express.urlencoded())
 
 
 
-// app.use("/api", apiRoutes)
+app.use("/api", apiRoutes)
 
 // app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 // app.use('/temp', express.static(path.join(__dirname, '../temp')));
