@@ -3,6 +3,6 @@ import blogRoutes from "./blog.routes";
 
 const router = express.Router();
 
-router.use("/blog", blogRoutes);
+router.use("/blogs", blogRoutes);
 
 export default router;

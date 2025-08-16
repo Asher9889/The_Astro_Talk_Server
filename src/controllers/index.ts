@@ -1,7 +1,7 @@
-import { createblog } from "./blog.controller";
+import { createblog, getBlogs, getBlog, updateBlog, deleteBlog } from "./blog.controller";
 
 const blogsController = {
-    createblog
+    createblog, getBlogs, getBlog, updateBlog, deleteBlog
 }
 
 export { blogsController}

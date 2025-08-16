@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IBlog extends Document {
+  id: number;       // main numeric ID
   title: string;
   content: string;
   image?: string;
@@ -8,6 +9,7 @@ export interface IBlog extends Document {
 
 const blogSchema = new Schema<IBlog>(
   {
+    id: { type: Number, required: true, unique: true, index: true }, // main id
     title: { type: String, required: true },
     content: { type: String, required: true },
     image: { type: String },
@@ -15,6 +17,6 @@ const blogSchema = new Schema<IBlog>(
   { timestamps: true }
 );
 
-const Blog =  mongoose.model<IBlog>("Blog", blogSchema);
+const Blog = mongoose.model<IBlog>("Blog", blogSchema);
 
-export default Blog
+export default Blog;
