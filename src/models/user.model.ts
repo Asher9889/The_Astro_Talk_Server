@@ -1,0 +1,53 @@
+import mongoose, { Document, Schema } from "mongoose";
+import { IUser } from "../interfaces";
+import * as argon2 from "argon2";
+
+// Extend IUser with Mongoose Document
+interface IMongoUser extends IUser, Document {}
+
+const userSchema = new Schema(
+  {
+    fullName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      match: /^\+?[0-9]{10,15}$/, // 10-digit phone
+    },
+    password: {
+      type: String,
+      required: true,
+      minlength: 6,
+    },
+  },
+  { timestamps: true }
+);
+
+// Pre-save hook
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  this.password = await argon2.hash(this.password);
+  next();
+});
+
+// Compare password
+userSchema.methods.comparePassword = async function (candidatePassword: string) {
+  return argon2.verify(this.password, candidatePassword);
+};
+
+
+const User = mongoose.model<IMongoUser>("User", userSchema);
+
+export default User;

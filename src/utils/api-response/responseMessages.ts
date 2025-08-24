@@ -7,4 +7,11 @@ const blogResponse = {
     deleted: "Blog deleted successfully."
 }
 
-export { blogResponse };
+const authResponse = {
+    ifFound : "User with this email or phone number already exists",
+    created: "User created successfully.",
+
+    
+}
+
+export { blogResponse, authResponse };

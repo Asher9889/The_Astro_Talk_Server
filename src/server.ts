@@ -29,6 +29,7 @@ app.use(express.json({ limit: "10mb" }))
 app.use(express.urlencoded())
 
 app.use("/api", apiRoutes)
+console.log(path.join(__dirname, '../uploads'))
 
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 // app.use('/temp', express.static(path.join(__dirname, '../temp')));

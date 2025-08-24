@@ -4,7 +4,10 @@ import ApiSuccessResponse from "./api-response/apiSuccessResponse";
 import checkRouteExists from "./check-route-exists/checkRouteExists";
 import globalErrorHandler from "./global-error-handler/globalErrorHandler";
 
-import { blogResponse } from "./api-response/responseMessages";
+import { blogResponse, authResponse } from "./api-response/responseMessages";
+
+//============ Schema Validations =================>
+import validateUserSchema from "./schema-validation/validateUser.schema";
 
 
-export { ApiErrorResponse, ApiSuccessResponse, checkRouteExists, globalErrorHandler, blogResponse }
+export { ApiErrorResponse, ApiSuccessResponse, checkRouteExists, globalErrorHandler, blogResponse, validateUserSchema, authResponse }

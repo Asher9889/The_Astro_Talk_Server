@@ -1,3 +1,4 @@
 import Blog from "./blog.model";
+import User from "./user.model";
 
-export { Blog }
+export { Blog, User }
