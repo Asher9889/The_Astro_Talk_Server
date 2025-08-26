@@ -6,6 +6,7 @@ import { validateUser } from "../../middlewares";
 const router = express.Router();
 
 router.post("/register", validateUser, authController.signUp);
+router.post("/login", authController.login);
 // router.get("/", blogsController.getBlogs);
 // router.get("/:id", blogsController.getBlog);
 // router.put("/:id", upload.single("image"), blogsController.updateBlog);

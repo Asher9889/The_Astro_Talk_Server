@@ -1,3 +1,3 @@
-import { IUser } from "./IUser.interface";
+import { IUser, ILoginUser } from "./IUser.interface";
 
-export { IUser }
+export { IUser, ILoginUser }

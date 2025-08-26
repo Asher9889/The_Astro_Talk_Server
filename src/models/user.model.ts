@@ -1,9 +1,15 @@
 import mongoose, { Document, Schema } from "mongoose";
 import { IUser } from "../interfaces";
 import * as argon2 from "argon2";
+import jwt from "jsonwebtoken";
+import { config } from "../config";
 
 // Extend IUser with Mongoose Document
-interface IMongoUser extends IUser, Document {}
+interface IMongoUser extends IUser, Document {
+  comparePassword(candidatePassword: string): Promise<boolean>;
+  generateAccessToken(): string;
+  generateRefreshToken(): string;
+}
 
 const userSchema = new Schema(
   {
@@ -45,6 +51,24 @@ userSchema.pre("save", async function (next) {
 // Compare password
 userSchema.methods.comparePassword = async function (candidatePassword: string) {
   return argon2.verify(this.password, candidatePassword);
+};
+
+// Generate Access Token (short-lived)
+userSchema.methods.generateAccessToken = function () {
+  return jwt.sign(
+    { id: this._id, email: this.email }, 
+    config.accessSecret as string,
+    { expiresIn: "15m" } // 15 minutes
+  );
+};
+
+// Generate Refresh Token (long-lived)
+userSchema.methods.generateRefreshToken = function () {
+  return jwt.sign(
+    { id: this._id, email: this.email }, 
+    config.refreshSecret as string,
+    { expiresIn: "7d" } // 7 days
+  );
 };
 
 

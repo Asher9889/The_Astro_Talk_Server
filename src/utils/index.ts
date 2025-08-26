@@ -7,7 +7,7 @@ import globalErrorHandler from "./global-error-handler/globalErrorHandler";
 import { blogResponse, authResponse } from "./api-response/responseMessages";
 
 //============ Schema Validations =================>
-import validateUserSchema from "./schema-validation/validateUser.schema";
+import { validateUserSchema, validateLoginUserSchema } from "./schema-validation/validateUser.schema";
 
 
-export { ApiErrorResponse, ApiSuccessResponse, checkRouteExists, globalErrorHandler, blogResponse, validateUserSchema, authResponse }
+export { ApiErrorResponse, ApiSuccessResponse, checkRouteExists, globalErrorHandler, blogResponse, validateUserSchema, validateLoginUserSchema, authResponse }

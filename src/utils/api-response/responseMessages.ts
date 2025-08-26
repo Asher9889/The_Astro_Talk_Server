@@ -9,7 +9,10 @@ const blogResponse = {
 
 const authResponse = {
     ifFound : "User with this email or phone number already exists",
+    notFound: "No user found!! Sorry try with other ones.",
     created: "User created successfully.",
+    inValidCredentials: "Invalid, Please try with correct password.",
+    loggedIn: "User logged in successfully"
 
     
 }

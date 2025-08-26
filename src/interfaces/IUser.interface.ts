@@ -2,6 +2,12 @@ interface IUser {
     fullName: string;
     email: string;
     phone: number;
+    password: string
 }
 
-export { IUser };
+interface ILoginUser {
+    email: string;
+    password: string;
+}
+
+export { IUser, ILoginUser };

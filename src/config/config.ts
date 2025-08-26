@@ -12,6 +12,8 @@ interface Config {
     mongoAuthSource: string;
     mongoDBUrl?: string;
     dbName: string;
+    accessSecret: string;
+    refreshSecret: string;
 }
 
 const config: Config = {
@@ -24,6 +26,8 @@ const config: Config = {
     mongoAuthSource: process.env.MONGO_AUTHSOURCE || "admin",
     // Build URL dynamically if not provided directly
     dbName: process.env.MONGO_DBNAME || "",
+    accessSecret: process.env.JWT_ACCESS_SECRET || "test",
+    refreshSecret: process.env.JWT_REFRESH_SECRET || "test"
 };
 
 export default config;

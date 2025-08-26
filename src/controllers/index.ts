@@ -1,4 +1,4 @@
-import { signUp } from "./auth.controller";
+import { signUp, login } from "./auth.controller";
 import { createblog, getBlogs, getBlog, updateBlog, deleteBlog } from "./blog.controller";
 
 const blogsController = {
@@ -6,7 +6,7 @@ const blogsController = {
 }
 
 const authController = {
-    signUp
+    signUp, login
 }
 
 export { blogsController, authController }

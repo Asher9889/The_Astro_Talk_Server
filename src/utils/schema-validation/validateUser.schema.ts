@@ -1,11 +1,12 @@
 import Joi from "joi";
-import { IUser } from "../../interfaces";
+import { IUser, ILoginUser } from "../../interfaces";
 
-interface IRegisterUser extends IUser{
+interface IRegisterUser extends IUser {
     password: string;
     confirmPassword: string;
 }
 
+// Sign-up validation
 function validateUserSchema(userDetails: IRegisterUser) {
     const userSchema = Joi.object({
         fullName: Joi.string()
@@ -59,5 +60,32 @@ function validateUserSchema(userDetails: IRegisterUser) {
 
 }
 
-export default validateUserSchema;
+// Login Validation
+function validateLoginUserSchema(userDetails: ILoginUser) {
+    const loginUserSchema = Joi.object({
+        email: Joi.string()
+            .email()
+            .required()
+            .messages({
+                "string.email": "Please enter a valid email address.",
+                "string.empty": "Email is required.",
+                "any.required": "Email is required.",
+            }),
+
+        password: Joi.string()
+            .min(6)
+            .required()
+            .messages({
+                "string.min": "Password must be at least {#limit} characters.",
+                "string.empty": "Phone number is required.",
+                "any.required": "Password is required.",
+            }),
+    });
+
+    return loginUserSchema.validate(userDetails);
+
+}
+
+
+export { validateUserSchema, validateLoginUserSchema }
 
