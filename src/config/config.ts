@@ -14,6 +14,12 @@ interface Config {
     dbName: string;
     accessSecret: string;
     refreshSecret: string;
+    hostingerWebMailHost: string;
+    hostingerWebMailPort:number;
+    hostingerWebMailUser:string;
+    hostingerWebMailPass: string
+    clientEmail: string;
+
 }
 
 const config: Config = {
@@ -27,7 +33,17 @@ const config: Config = {
     // Build URL dynamically if not provided directly
     dbName: process.env.MONGO_DBNAME || "",
     accessSecret: process.env.JWT_ACCESS_SECRET || "test",
-    refreshSecret: process.env.JWT_REFRESH_SECRET || "test"
+    refreshSecret: process.env.JWT_REFRESH_SECRET || "test",
+
+    // Hostinger
+    hostingerWebMailHost: process.env.HOSTINGER_WEB_MAIL_HOST || "",
+    hostingerWebMailPort: Number(process.env.HOSTINGER_WEB_MAIL_PORT) || 0,
+    hostingerWebMailUser: process.env.HOSTINGER_WEB_MAIL_AUTH_USER || "",
+    hostingerWebMailPass: process.env.HOSTINGER_WEB_MAIL_AUTH_PASS || "",
+
+    // Client Email
+    clientEmail: process.env.CLIENT_EMAIL || ""
+
 };
 
 export default config;

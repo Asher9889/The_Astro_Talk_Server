@@ -10,4 +10,8 @@ import { blogResponse, authResponse } from "./api-response/responseMessages";
 import { validateUserSchema, validateLoginUserSchema } from "./schema-validation/validateUser.schema";
 
 
-export { ApiErrorResponse, ApiSuccessResponse, checkRouteExists, globalErrorHandler, blogResponse, validateUserSchema, validateLoginUserSchema, authResponse }
+//============= Node Mailer ===============>
+import { sendAdminSignupNotification, sendUserWelcomeEmail } from "./nodemailer/sendMail";
+
+
+export { ApiErrorResponse, ApiSuccessResponse, checkRouteExists, globalErrorHandler, blogResponse, validateUserSchema, validateLoginUserSchema, authResponse, sendAdminSignupNotification, sendUserWelcomeEmail }

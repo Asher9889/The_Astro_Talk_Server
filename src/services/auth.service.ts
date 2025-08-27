@@ -1,7 +1,8 @@
 import { StatusCodes } from "http-status-codes";
 import { ILoginUser, IUser } from "../interfaces";
 import { User } from "../models";
-import { ApiErrorResponse, authResponse } from "../utils";
+import { ApiErrorResponse, authResponse, sendAdminSignupNotification, sendUserWelcomeEmail } from "../utils";
+import { config } from "../config";
 
 type SafeUser = {
   id: string;
@@ -25,7 +26,11 @@ async function register(user: IUser) {
 		}
 
 		const newUser = new User(user);
-		await newUser.save();
+		const savedUser = await newUser.save();
+		await sendAdminSignupNotification(config.clientEmail, savedUser.email);
+		await sendUserWelcomeEmail(savedUser.email);
+		
+
 
 		return { data: newUser, flag: true };
 	} catch (error: any) {
