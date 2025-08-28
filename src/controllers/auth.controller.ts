@@ -50,4 +50,50 @@ async function login(req: Request, res: Response, next: NextFunction): Promise<R
     }
 }
 
-export { signUp, login }
+//------- refresh ------>
+async function refresh(req: Request, res: Response, next: NextFunction) {
+    try {
+        const token = req.cookies.refreshToken;
+        if (!token) {
+            throw new ApiErrorResponse(StatusCodes.BAD_REQUEST, authResponse.noRefreshToken);
+        }
+        const tokens = await authService.refresh(token);
+
+        res.cookie("refreshToken", tokens.refreshToken, {
+            httpOnly: true,   // JS cannot access cookie
+            // secure: false,     // true: Only send over HTTPS
+            // sameSite: "strict", // CSRF protection
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        });
+        return res.status(StatusCodes.OK).json(new ApiSuccessResponse(StatusCodes.OK, authResponse.tokenRefreshed, tokens));
+
+    } catch (error: any) {
+        console.log("error is:", error)
+        if (error instanceof ApiErrorResponse) {
+            return next(error);
+        }
+        next(new ApiSuccessResponse(StatusCodes.INTERNAL_SERVER_ERROR, error.message))
+    }
+};
+
+async function logout(req: Request, res: Response, next: NextFunction) {
+    try {
+        res.clearCookie("refreshToken", {
+            httpOnly: true,
+            //   secure: process.env.NODE_ENV === "production",
+            //   sameSite: "strict",
+        });
+    
+        return res.status(StatusCodes.OK).json(new ApiSuccessResponse(StatusCodes.OK, "Logged out successfully"));
+    
+    } catch (error:any) {
+        console.log("error is:", error)
+        if (error instanceof ApiErrorResponse) {
+            return next(error);
+        }
+        next(new ApiSuccessResponse(StatusCodes.INTERNAL_SERVER_ERROR, error.message))
+    }
+}
+
+
+export { signUp, login, refresh, logout }

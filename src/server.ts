@@ -1,4 +1,5 @@
 import express, { NextFunction, Request, Response } from 'express';
+import cookieParser from "cookie-parser";
 import { config } from './config/index';
 import cors from 'cors';
 import apiRoutes from "./routes/index";
@@ -27,6 +28,7 @@ app.use(cors({
 
 app.use(express.json({ limit: "10mb" }))
 app.use(express.urlencoded())
+app.use(cookieParser()); 
 
 app.use("/api", apiRoutes)
 console.log(path.join(__dirname, '../uploads'))

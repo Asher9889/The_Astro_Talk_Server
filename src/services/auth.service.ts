@@ -1,15 +1,16 @@
 import { StatusCodes } from "http-status-codes";
-import { ILoginUser, IUser } from "../interfaces";
+import { DecodedToken, ILoginUser, IUser } from "../interfaces";
 import { User } from "../models";
 import { ApiErrorResponse, authResponse, sendAdminSignupNotification, sendUserWelcomeEmail } from "../utils";
 import { config } from "../config";
+import jwt, { JsonWebTokenError, NotBeforeError, TokenExpiredError } from 'jsonwebtoken';
 
 type SafeUser = {
-  id: string;
-  fullName: string;
-  email: string;
-  phone: string;
-  accessToken?:string
+	id: string;
+	fullName: string;
+	email: string;
+	phone: string;
+	accessToken?: string
 };
 
 async function register(user: IUser) {
@@ -29,7 +30,7 @@ async function register(user: IUser) {
 		const savedUser = await newUser.save();
 		await sendAdminSignupNotification(config.clientEmail, savedUser.email);
 		await sendUserWelcomeEmail(savedUser.email);
-		
+
 
 
 		return { data: newUser, flag: true };
@@ -66,4 +67,37 @@ async function login(user: ILoginUser) {
 	return { accessToken, refreshToken, safeUser }
 }
 
-export { register, login };
+async function refresh(refreshToken: string) {
+
+	try {
+		const decodedInfo = jwt.verify(refreshToken, config.refreshSecret) as DecodedToken;
+
+		const user = await User.findById(decodedInfo.id);
+		if (!user) {
+			throw new ApiErrorResponse(StatusCodes.UNAUTHORIZED, authResponse.userNotFound);
+		}
+
+		const newAccessToken = user.generateAccessToken();
+		const newRefreshToken = user.generateRefreshToken();
+		return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+	} catch (error) {
+		if (error instanceof TokenExpiredError) {
+			// token is expired
+			throw new ApiErrorResponse(StatusCodes.UNAUTHORIZED, "Access token expired, please refresh");
+		}
+
+		if (error instanceof NotBeforeError) {
+			// token not yet active
+			throw new ApiErrorResponse(StatusCodes.UNAUTHORIZED, "Token not active yet");
+		}
+
+		if (error instanceof JsonWebTokenError) {
+			// any other JWT error (invalid signature, malformed, etc.)
+			throw new ApiErrorResponse(StatusCodes.UNAUTHORIZED, "Invalid token");
+		}
+		throw new ApiErrorResponse(StatusCodes.INTERNAL_SERVER_ERROR, "Internal server error");
+	}
+}
+
+
+export { register, login, refresh };

@@ -12,9 +12,11 @@ const authResponse = {
     notFound: "No user found!! Sorry try with other ones.",
     created: "User created successfully.",
     inValidCredentials: "Invalid, Please try with correct password.",
-    loggedIn: "User logged in successfully"
-
-    
+    loggedIn: "User logged in successfully",
+    noRefreshToken: "No refresh token provided", 
+    noAuth: "Invalid or expired refresh token",
+    userNotFound: "User not found",
+    tokenRefreshed: "Tokens refreshed successfully",
 }
 
 export { blogResponse, authResponse };
