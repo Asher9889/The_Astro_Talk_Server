@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { authService } from "../services";
 import { StatusCodes } from "http-status-codes";
-import { ApiSuccessResponse, ApiErrorResponse, authResponse, validateLoginUserSchema, getCookieOptions } from "../utils";
+import { ApiSuccessResponse, ApiErrorResponse, authResponse, validateLoginUserSchema, getCookieOptions, sendForgetPasswordEmail } from "../utils";
 import { AuthRequest } from "../interfaces";
+
 
 
 async function signUp(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
@@ -88,7 +89,7 @@ async function logout(req: Request, res: Response, next: NextFunction) {
 async function me(req: AuthRequest, res: Response, next: NextFunction) {
     try {
         const user = req.user;
-        if(!user){
+        if (!user) {
             throw new ApiErrorResponse(StatusCodes.UNAUTHORIZED, authResponse.loginFirst)
         }
         return res
@@ -96,7 +97,34 @@ async function me(req: AuthRequest, res: Response, next: NextFunction) {
             .json(new ApiSuccessResponse(StatusCodes.OK, authResponse.foundUser, user));
     } catch (err: any) {
         console.error("ME endpoint error:", err);
-        if(err instanceof ApiErrorResponse){
+        if (err instanceof ApiErrorResponse) {
+            return next(err);
+        }
+        next(new ApiErrorResponse(StatusCodes.UNAUTHORIZED, err.message || authResponse.loginFirst));
+    }
+}
+
+async function forgetPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { email } = req.body;
+        if (!email || typeof email !== "string" || email.trim() === "") {
+            throw new ApiErrorResponse(StatusCodes.BAD_REQUEST, authResponse.emailRequired);
+        }
+
+        const resetToken = authService.forgetPassword(email)
+
+        const clientUrl = process.env.CLIENT_URL || `${req.protocol}://${req.get('host')}`;
+        const resetUrl = `${clientUrl}/reset-password/${resetToken}`;
+
+        const success = await sendForgetPasswordEmail(email, resetUrl);
+
+        if (!success) {
+            throw new ApiErrorResponse(StatusCodes.INTERNAL_SERVER_ERROR, authResponse.passResetlinkNotSent)
+        }
+        return res.status(StatusCodes.OK).json(new ApiSuccessResponse(StatusCodes.OK, authResponse.passResetlinkSent))
+    } catch (err: any) {
+        console.error("ME endpoint error:", err);
+        if (err instanceof ApiErrorResponse) {
             return next(err);
         }
         next(new ApiErrorResponse(StatusCodes.UNAUTHORIZED, err.message || authResponse.loginFirst));
@@ -104,4 +132,4 @@ async function me(req: AuthRequest, res: Response, next: NextFunction) {
 }
 
 
-export { signUp, login, refresh, logout, me }
+export { signUp, login, refresh, logout, me, forgetPassword }

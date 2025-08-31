@@ -4,6 +4,7 @@ import { User } from "../models";
 import { ApiErrorResponse, authResponse, sendAdminSignupNotification, sendUserWelcomeEmail } from "../utils";
 import { config } from "../config";
 import jwt, { JsonWebTokenError, NotBeforeError, TokenExpiredError } from 'jsonwebtoken';
+import crypto from "crypto";
 
 type SafeUser = {
 	id: string;
@@ -99,5 +100,31 @@ async function refresh(refreshToken: string) {
 	}
 }
 
+async function forgetPassword(email: string) {
+	try {
+		const user = await User.findOne({ email });
+		if (!user) {
+			throw new ApiErrorResponse(StatusCodes.NOT_FOUND, authResponse.notFound);
+		}
 
-export { register, login, refresh };
+		// generate token
+		const resetToken = crypto.randomBytes(32).toString("hex");
+
+		user.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+
+		user.resetPasswordExpires = new Date(Date.now() + 15 * 60 * 1000); // expired after 15 mins
+		await user.save();
+
+		return resetToken;
+	} catch (error:any) {
+		if (error instanceof ApiErrorResponse) {
+			throw error;
+		}
+		throw new ApiErrorResponse(StatusCodes.INTERNAL_SERVER_ERROR, error.message)
+	}
+
+
+}
+
+
+export { register, login, refresh, forgetPassword };

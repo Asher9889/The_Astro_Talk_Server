@@ -76,4 +76,43 @@ async function sendUserWelcomeEmail(
   }
 }
 
-export { sendAdminSignupNotification, sendUserWelcomeEmail }
+async function sendForgetPasswordEmail(userEmail: string, resetUrl: string): Promise<boolean> {
+  try {
+    const info = await transporter.sendMail({
+      from: `"TheLifeAstro" <${config.hostingerWebMailUser}>`,
+      to: userEmail,
+      subject: "🔐 Reset Your Password – TheLifeAstro",
+      html: `
+        <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #4B0082;">🔐 Password Reset Request</h2>
+          <p>Hello,</p>
+          <p>We received a request to reset your password for your <strong>TheLifeAstro</strong> account.</p>
+          <p>If you made this request, click the button below to reset your password:</p>
+          
+          <p style="text-align: center; margin: 30px 0;">
+            <a href="${resetUrl}" style="display: inline-block; padding: 12px 24px; background-color: #4B0082; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: bold;">
+              Reset Password
+            </a>
+          </p>
+
+          <p>If you didn’t request a password reset, you can safely ignore this email. Your password will remain unchanged.</p>
+          <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;" />
+          <p style="font-size: 12px; color: #888;">
+            This link will expire in 1 hour. If you have any issues, please contact our support team.
+            <br /><br />
+            — TheLifeAstro Team
+          </p>
+        </div>
+      `,
+    });
+
+    console.log("✅ Password reset email sent:", info.messageId);
+    return true;
+  } catch (err) {
+    console.error("❌ Error sending password reset email:", err);
+    return false;
+  }
+}
+
+
+export { sendAdminSignupNotification, sendUserWelcomeEmail, sendForgetPasswordEmail }

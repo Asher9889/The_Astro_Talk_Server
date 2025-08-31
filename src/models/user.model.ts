@@ -9,6 +9,8 @@ interface IMongoUser extends IUser, Document {
   comparePassword(candidatePassword: string): Promise<boolean>;
   generateAccessToken(): string;
   generateRefreshToken(): string;
+  resetPasswordToken: string;
+  resetPasswordExpires: Date;
 }
 
 const userSchema = new Schema(
@@ -37,6 +39,12 @@ const userSchema = new Schema(
       required: true,
       minlength: 6,
     },
+    resetPasswordToken: {
+      type: String,
+    },
+    resetPasswordExpires: {
+      type: Date,
+    }
   },
   { timestamps: true }
 );

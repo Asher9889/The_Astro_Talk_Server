@@ -1,7 +1,7 @@
-import { register, login, refresh } from "./auth.service";
+import { register, login, refresh, forgetPassword } from "./auth.service";
 
 const authService = {
-    register, login, refresh
+    register, login, refresh, forgetPassword
 }
 
 export { authService }

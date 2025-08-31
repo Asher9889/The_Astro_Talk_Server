@@ -19,7 +19,10 @@ const authResponse = {
     tokenRefreshed: "Tokens refreshed successfully",
     tokenExpired: "Token is expired",
     loginFirst: "Please first login",
-    foundUser: "User fetched successfully"
+    foundUser: "User fetched successfully",
+    emailRequired: "Email is required",
+    passResetlinkSent: "Password reset link sent successfully",
+    passResetlinkNotSent: "Failed to sent password reset link"
 }
 
 export { blogResponse, authResponse };

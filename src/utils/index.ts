@@ -13,7 +13,7 @@ import { validateUserSchema, validateLoginUserSchema } from "./schema-validation
 
 
 //============= Node Mailer ===============>
-import { sendAdminSignupNotification, sendUserWelcomeEmail } from "./nodemailer/sendMail";
+import { sendAdminSignupNotification, sendUserWelcomeEmail, sendForgetPasswordEmail } from "./nodemailer/sendMail";
 
 
-export { ApiErrorResponse, ApiSuccessResponse, checkRouteExists, globalErrorHandler, blogResponse, validateUserSchema, validateLoginUserSchema, authResponse, sendAdminSignupNotification, sendUserWelcomeEmail, getCookieOptions }
+export { ApiErrorResponse, ApiSuccessResponse, checkRouteExists, globalErrorHandler, blogResponse, validateUserSchema, validateLoginUserSchema, authResponse, sendAdminSignupNotification, sendUserWelcomeEmail, sendForgetPasswordEmail, getCookieOptions }
