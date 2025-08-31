@@ -28,8 +28,8 @@ async function register(user: IUser) {
 
 		const newUser = new User(user);
 		const savedUser = await newUser.save();
-		await sendAdminSignupNotification(config.clientEmail, savedUser.email);
-		await sendUserWelcomeEmail(savedUser.email);
+		// await sendAdminSignupNotification(config.clientEmail, savedUser.email);
+		// await sendUserWelcomeEmail(savedUser.email);
 
 
 

@@ -17,6 +17,9 @@ const authResponse = {
     noAuth: "Invalid or expired refresh token",
     userNotFound: "User not found",
     tokenRefreshed: "Tokens refreshed successfully",
+    tokenExpired: "Token is expired",
+    loginFirst: "Please first login",
+    foundUser: "User fetched successfully"
 }
 
 export { blogResponse, authResponse };

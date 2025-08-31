@@ -1,3 +1,4 @@
+import { Request } from "express";
 import { JwtPayload } from "jsonwebtoken";
 
 interface IUser {
@@ -18,5 +19,9 @@ interface DecodedToken extends JwtPayload {
   email: string;
 }
 
+interface AuthRequest extends Request {
+    user?: any; // you can make this a proper User type
+}
 
-export { IUser, ILoginUser, DecodedToken };
+
+export { IUser, ILoginUser, DecodedToken, AuthRequest };

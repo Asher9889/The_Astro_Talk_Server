@@ -1,7 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { authService } from "../services";
 import { StatusCodes } from "http-status-codes";
-import { ApiSuccessResponse, ApiErrorResponse, authResponse, validateLoginUserSchema } from "../utils";
+import { ApiSuccessResponse, ApiErrorResponse, authResponse, validateLoginUserSchema, getCookieOptions } from "../utils";
+import { AuthRequest } from "../interfaces";
+
 
 async function signUp(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
     /**
@@ -31,16 +33,10 @@ async function login(req: Request, res: Response, next: NextFunction): Promise<R
         const { refreshToken, accessToken, safeUser } = await authService.login(value);
 
         // Set refresh token in secure cookie
-        res.cookie("refreshToken", refreshToken, {
-            httpOnly: true,   // JS cannot access cookie
-            // secure: false,     // true: Only send over HTTPS
-            // sameSite: "strict", // CSRF protection
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        });
+        res.cookie("refreshToken", refreshToken, getCookieOptions("refresh"));
+        res.cookie("accessToken", accessToken, getCookieOptions("access"));
 
-        safeUser.accessToken = accessToken
         return res.status(StatusCodes.OK).json(new ApiSuccessResponse(StatusCodes.OK, authResponse.loggedIn, safeUser));
-
     } catch (error: any) {
         console.log("error is:", error)
         if (error instanceof ApiErrorResponse) {
@@ -54,18 +50,15 @@ async function login(req: Request, res: Response, next: NextFunction): Promise<R
 async function refresh(req: Request, res: Response, next: NextFunction) {
     try {
         const token = req.cookies.refreshToken;
+        console.log("refreshToken is", token)
         if (!token) {
-            throw new ApiErrorResponse(StatusCodes.BAD_REQUEST, authResponse.noRefreshToken);
+            throw new ApiErrorResponse(StatusCodes.UNAUTHORIZED, authResponse.noRefreshToken);
         }
         const tokens = await authService.refresh(token);
 
-        res.cookie("refreshToken", tokens.refreshToken, {
-            httpOnly: true,   // JS cannot access cookie
-            // secure: false,     // true: Only send over HTTPS
-            // sameSite: "strict", // CSRF protection
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        });
-        return res.status(StatusCodes.OK).json(new ApiSuccessResponse(StatusCodes.OK, authResponse.tokenRefreshed, tokens));
+        res.cookie("refreshToken", tokens.refreshToken, getCookieOptions("refresh"));
+        res.cookie("accessToken", tokens.accessToken, getCookieOptions("access"));
+        return res.status(StatusCodes.OK).json(new ApiSuccessResponse(StatusCodes.OK, authResponse.tokenRefreshed));
 
     } catch (error: any) {
         console.log("error is:", error)
@@ -78,15 +71,12 @@ async function refresh(req: Request, res: Response, next: NextFunction) {
 
 async function logout(req: Request, res: Response, next: NextFunction) {
     try {
-        res.clearCookie("refreshToken", {
-            httpOnly: true,
-            //   secure: process.env.NODE_ENV === "production",
-            //   sameSite: "strict",
-        });
-    
+        res.clearCookie("refreshToken", getCookieOptions("refresh"));
+        res.clearCookie("accessToken", getCookieOptions("access"));
+
         return res.status(StatusCodes.OK).json(new ApiSuccessResponse(StatusCodes.OK, "Logged out successfully"));
-    
-    } catch (error:any) {
+
+    } catch (error: any) {
         console.log("error is:", error)
         if (error instanceof ApiErrorResponse) {
             return next(error);
@@ -95,5 +85,23 @@ async function logout(req: Request, res: Response, next: NextFunction) {
     }
 }
 
+async function me(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+        const user = req.user;
+        if(!user){
+            throw new ApiErrorResponse(StatusCodes.UNAUTHORIZED, authResponse.loginFirst)
+        }
+        return res
+            .status(StatusCodes.OK)
+            .json(new ApiSuccessResponse(StatusCodes.OK, authResponse.foundUser, user));
+    } catch (err: any) {
+        console.error("ME endpoint error:", err);
+        if(err instanceof ApiErrorResponse){
+            return next(err);
+        }
+        next(new ApiErrorResponse(StatusCodes.UNAUTHORIZED, err.message || authResponse.loginFirst));
+    }
+}
 
-export { signUp, login, refresh, logout }
+
+export { signUp, login, refresh, logout, me }

@@ -1,4 +1,4 @@
 import upload from "./multer.upload";
-import validateUser from "./validateUser.middleware";
+import validateUser, { authMiddleware } from "./validateUser.middleware";
 
-export { upload, validateUser };
+export { upload, validateUser, authMiddleware };
