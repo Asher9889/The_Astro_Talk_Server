@@ -111,7 +111,7 @@ async function forgetPassword(req: Request, res: Response, next: NextFunction) {
             throw new ApiErrorResponse(StatusCodes.BAD_REQUEST, authResponse.emailRequired);
         }
 
-        const resetToken = authService.forgetPassword(email)
+        const resetToken = await authService.forgetPassword(email)
 
         const clientUrl = process.env.CLIENT_URL || `${req.protocol}://${req.get('host')}`;
         const resetUrl = `${clientUrl}/reset-password/${resetToken}`;
@@ -123,7 +123,7 @@ async function forgetPassword(req: Request, res: Response, next: NextFunction) {
         }
         return res.status(StatusCodes.OK).json(new ApiSuccessResponse(StatusCodes.OK, authResponse.passResetlinkSent))
     } catch (err: any) {
-        console.error("ME endpoint error:", err);
+        console.error("forgetPassword endpoint error:", err);
         if (err instanceof ApiErrorResponse) {
             return next(err);
         }

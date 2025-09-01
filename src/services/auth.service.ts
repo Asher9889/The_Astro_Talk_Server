@@ -117,13 +117,12 @@ async function forgetPassword(email: string) {
 
 		return resetToken;
 	} catch (error:any) {
+		console.error("forget error service:", error)
 		if (error instanceof ApiErrorResponse) {
 			throw error;
 		}
 		throw new ApiErrorResponse(StatusCodes.INTERNAL_SERVER_ERROR, error.message)
 	}
-
-
 }
 
 
